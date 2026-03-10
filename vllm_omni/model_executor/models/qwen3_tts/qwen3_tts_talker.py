@@ -1595,9 +1595,10 @@ class Qwen3TTSTalkerForConditionalGeneration(nn.Module):
         dev = input_embeds.device
 
         input_ids = input_ids.reshape(bsz, 1).to(dtype=torch.long, device=dev)
-        last_id_hidden = input_embeds.reshape(bsz, 1, -1).to(dtype=torch.bfloat16, device=dev)
-        past_hidden = last_talker_hidden.reshape(bsz, 1, -1).to(dtype=torch.bfloat16, device=dev)
-        text_step = text_step.reshape(bsz, 1, -1).to(dtype=torch.bfloat16, device=dev)
+        param_dtype = next(self.code_predictor.parameters()).dtype
+        last_id_hidden = input_embeds.reshape(bsz, 1, -1).to(dtype=param_dtype, device=dev)
+        past_hidden = last_talker_hidden.reshape(bsz, 1, -1).to(dtype=param_dtype, device=dev)
+        text_step = text_step.reshape(bsz, 1, -1).to(dtype=param_dtype, device=dev)
 
         # Residual predictor runs fixed-length (Q-1) steps via the vLLM-native code_predictor.
         max_steps = q - 1
